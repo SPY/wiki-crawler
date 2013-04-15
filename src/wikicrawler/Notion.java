@@ -14,33 +14,30 @@ public class Notion {
     
     public URL url;
     public String title;
-    public ArrayList<Link> links;
-    public HashMap<URL, Integer> counts;
+    public HashMap<URL, ArrayList<Link>> links;
     
-    public Notion(URL url, String title, ArrayList<Link> links) {
+    private Notion(URL url, String title, ArrayList<Link> links) {
         this.url = url;
         this.title = title;
-        this.links = links;
+        this.fillLinks(links);
     }
     
     public static Notion parsePage(URL url) {
         Crawler c = new Crawler(url);
         Notion n = new Notion(url, c.getTitle(), c.getLinks());
-        n.calcCounts();
         return n;
     }
     
-    private void calcCounts() {
-        this.counts = new HashMap();
-        Iterator<Link> it = links.iterator();
-        while(it.hasNext()) {
-            URL u = it.next().url;
-            if ( this.counts.containsKey(u) ) {
-                Integer old = this.counts.get(u);
-                this.counts.put(u, ++old);
+    private void fillLinks(ArrayList<Link> links) {
+        this.links = new HashMap();
+        for( Link l : links ) {
+            if ( this.links.containsKey(l.url)) {
+                this.links.get(l.url).add(l);
             }
             else {
-                this.counts.put(u, 1);
+                ArrayList<Link> ls = new ArrayList();
+                ls.add(l);
+                this.links.put(l.url, ls);
             }
         }
     }
