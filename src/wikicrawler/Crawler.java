@@ -4,6 +4,8 @@
  */
 package wikicrawler;
 
+import java.net.URL;
+
 import org.jsoup.Jsoup;
 import org.jsoup.Connection;
 import org.jsoup.nodes.*;
@@ -11,35 +13,25 @@ import org.jsoup.select.Elements;
 
 import java.util.*;
 
+import wikicrawler.Link;
+
 /**
  *
  * @author rezvov
  */
 public class Crawler {
     
-    public class Edge {
-        public String to;
-        public String title;
-        public String text;
-        public String content;
-        
-        public Edge(String to, String title, String text, String content) {
-            this.to = to;
-            this.title = title;
-            this.text = text;
-            this.content = content;
-        }
-        
-        public String toString() {
-            return this.title + " (" + this.text + "): " + this.to + " in text: " + this.content;
-        }
-    }
+    static private String contentId = "#mw-content-text";
     
     Document doc;
+    String host;
+    URL url;
     
-    public Crawler(String url) {
+    public Crawler(URL url) {
+        this.url = url;
         try {
-            Connection con = Jsoup.connect(url);
+            this.host = url.getHost();
+            Connection con = Jsoup.connect(url.toExternalForm());
             this.doc = con.get();
         }
         catch ( Exception e ) {
@@ -48,21 +40,31 @@ public class Crawler {
     }
     
     public String getContent() {
-        Elements el = this.doc.select("#mw-content-text");
+        Elements el = this.doc.select(Crawler.contentId);
         return el.html();
     }
     
-    public ArrayList<Edge> getLinks() {
-        Elements els = this.doc.select("#mw-content-text a");
-        ArrayList<Edge> ls = new ArrayList();
-        Iterator<Element> it = els.iterator();
-        while(it.hasNext()) {
-            Element el = it.next();
-            Edge e = new Edge(el.attr("href"), el.attr("title"), el.text(), el.parent().text());
-            if ( !el.hasClass("internal") 
+    public String getTitle() {
+        return this.doc.select("#firstHeading span").text();
+    }
+    
+    public ArrayList<Link> getLinks() {
+        Elements els = this.doc.select(Crawler.contentId + " a");
+        ArrayList<Link> ls = new ArrayList();
+        for ( Element el : els ) {
+            if ( !el.hasClass("internal") && !el.hasClass("new")
                     && !el.parent().hasClass("editsection") 
-                    && !e.title.isEmpty() ) {
-                ls.add(e);
+                    && !el.attr("title").isEmpty() ) {
+                try {
+                    URL u = new URL("http://" + this.host + el.attr("href"));
+                    Link e = new Link(u, 
+                            el.attr("title"), 
+                            el.text(), 
+                            el.parent().text());
+                    ls.add(e);
+                }
+                catch (Exception e) {
+                }
             }
         }
         return ls;

@@ -4,8 +4,8 @@
  */
 package wikicrawler;
 
-import wikicrawler.Crawler;
 import java.util.*;
+import java.net.URL;
 /**
  *
  * @author rezvov
@@ -16,11 +16,15 @@ public class WikiCrawler {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        Crawler c = new Crawler("http://ru.wikipedia.org/wiki/BPMN");
-        ArrayList<Crawler.Edge> links = c.getLinks();
-        Iterator<Crawler.Edge> it = links.iterator();
-        while(it.hasNext()) {
-            System.out.println(it.next());
+        try {
+            Notion n = Notion.parsePage(new URL("http://ru.wikipedia.org/wiki/BPMN"));
+            System.out.println(n.title);
+            for ( Link l : n.links ) {
+                System.out.println(l.title);
+            }
+        } 
+        catch( Exception e ) {
+            System.out.println(e);
         }
     }
 }
