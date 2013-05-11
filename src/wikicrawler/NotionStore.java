@@ -32,7 +32,7 @@ public class NotionStore {
         try {
             admin = new HBaseAdmin(conf);
             notions = new HTable(conf, notionTable);
-            notions = new HTable(conf, linkTable);
+            links = new HTable(conf, linkTable);
         }
         catch ( Exception e ) {
             admin.close();
