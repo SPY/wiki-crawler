@@ -13,8 +13,6 @@ import org.jsoup.select.Elements;
 
 import java.util.*;
 
-import wikicrawler.Link;
-
 /**
  *
  * @author rezvov

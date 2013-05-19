@@ -21,7 +21,9 @@ public class WikiCrawler {
             System.out.println("Enter crawler enter-point");
         }
         try {
-            download(new URL(args[0]));
+            NotionStore.init();
+            //download(new URL(args[0]));
+            download(new URL("http://ru.wikipedia.org/wiki/BPMN"));
         } 
         catch( MalformedURLException e ) {
             System.out.println("Invalid url");

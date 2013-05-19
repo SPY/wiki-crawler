@@ -15,6 +15,7 @@ public class Notion {
     public URL url;
     public String title;
     public HashMap<URL, ArrayList<Link>> links;
+    public String content;
     
     private Notion(URL url, String title, ArrayList<Link> links) {
         this.url = url;
@@ -25,6 +26,7 @@ public class Notion {
     public static Notion parsePage(URL url) {
         Crawler c = new Crawler(url);
         Notion n = new Notion(url, c.getTitle(), c.getLinks());
+        n.content = c.getContent();
         return n;
     }
     
